@@ -35,21 +35,24 @@ Make GitHub repository display the npm package link in the "Packages" section or
 
 ---
 
-### Option 2: GitHub Packages (Advanced)
+### Option 2: GitHub Packages (Not Recommended)
 
-If you want to use GitHub Packages instead of npm registry:
+**Note**: GitHub "Packages" section only shows packages published to GitHub Packages registry, not npm packages.
 
-1. Go to repository Settings → Packages
-2. Enable GitHub Packages
-3. Publish package to GitHub Packages registry
+To show package in "Packages" section, you would need to:
 
-**Note**: This is more complex and not necessary if you're using npm registry.
+- Publish to GitHub Packages registry (separate from npm)
+- Use scoped package name: `@driule/ai-contextor`
+- Maintain two separate packages
+
+**Recommendation**: Not necessary. The npm link in README is sufficient.
 
 ---
 
 ### Option 3: Add Package Link in README (Already Done ✅)
 
 The README.md already includes:
+
 - npm badge
 - npm package link
 - Installation instructions
@@ -63,6 +66,7 @@ This is the simplest and most visible way.
 After publishing to npm with correct `package.json`:
 
 1. **Check npmjs.com**:
+
    - Go to: https://www.npmjs.com/package/ai-contextor
    - Should show "Repository" link to GitHub ✅
 
@@ -81,6 +85,7 @@ After publishing to npm with correct `package.json`:
 - ✅ README.md has npm link
 
 **GitHub may automatically detect the connection** based on:
+
 - `package.json` repository field
 - npm package metadata
 - Repository topics
@@ -119,4 +124,3 @@ If GitHub doesn't automatically show the package link:
 
 **Last Updated**: 2025-01-XX  
 **Version**: 1.0.0
-
