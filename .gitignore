@@ -42,6 +42,3 @@ logs/
 tmp/
 temp/
 
-# Local development docs (not for public)
-QUICK-START-PUBLISH.md
-
