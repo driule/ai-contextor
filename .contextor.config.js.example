@@ -1,0 +1,65 @@
+/**
+ * AI Contextor Configuration Example
+ * 
+ * Copy this file to .contextor.config.js and customize for your project
+ */
+
+module.exports = {
+  // Documentation directory
+  docsDir: ".ai",
+
+  // Source directories to monitor
+  sourceDirs: ["src", "lib"],
+
+  // File patterns to check
+  sourcePatterns: ["**/*.ts", "**/*.js", "**/*.prisma"],
+
+  // Documentation patterns
+  docPatterns: ["**/*.md"],
+
+  // Mapping: source files → documentation files
+  mappings: {
+    "src/app.ts": [".ai/architecture/system-overview.md"],
+    "src/services/**/*.ts": [".ai/architecture/components.md"],
+    "schema.prisma": [".ai/data/schema.md"],
+  },
+
+  // Cache file location
+  cacheFile: ".docs-check-cache.json",
+
+  // Check settings
+  check: {
+    lastUpdated: true, // Check "Last Updated" dates
+    version: true, // Check version numbers
+    links: true, // Check broken links
+    structure: true, // Check required sections
+  },
+
+  // Date format in docs
+  dateFormat: "YYYY-MM-DD",
+
+  // Date pattern in markdown
+  datePattern: /\*\*Last Updated\*\*:\s*(\d{4}-\d{2}-\d{2})/,
+
+  // Required sections in docs
+  requiredSections: [
+    "**Last Updated**",
+    "**Version**",
+    "## 🔗 Related Documentation",
+  ],
+
+  // Git integration
+  git: {
+    enabled: true,
+    useHash: true, // Use git hash for tracking
+    useTimestamps: true, // Use file timestamps
+  },
+
+  // Reporting
+  reporter: {
+    format: "console", // 'console', 'json', 'markdown'
+    quiet: false,
+    errorsOnly: false,
+  },
+};
+

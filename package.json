@@ -1,0 +1,52 @@
+{
+  "name": "ai-contextor",
+  "version": "0.1.0",
+  "description": "Check documentation freshness for AI assistant projects. Keep your AI docs in sync with code changes.",
+  "keywords": [
+    "documentation",
+    "ai",
+    "assistant",
+    "context",
+    "checker",
+    "freshness",
+    "maintenance",
+    "docs",
+    "documentation-checker",
+    "cli-tool",
+    "npm-package"
+  ],
+  "main": "src/index.js",
+  "bin": {
+    "contextor": "./bin/contextor.js",
+    "ai-contextor": "./bin/contextor.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Linting not configured yet\"",
+    "start": "node bin/contextor.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/driule/ai-contextor.git"
+  },
+  "author": {
+    "name": "Andrius",
+    "url": "https://github.com/driule"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/driule/ai-contextor/issues"
+  },
+  "homepage": "https://github.com/driule/ai-contextor#readme",
+  "files": [
+    "src",
+    "bin",
+    "config",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

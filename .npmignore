@@ -1,0 +1,46 @@
+# Source files (only include what's needed)
+# src/ is included, but we can exclude test files later
+tests/
+test/
+*.test.js
+*.spec.js
+
+# Development files
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation (keep README.md)
+docs/
+*.md
+!README.md
+
+# Config examples (keep example)
+.config.js
+!.contextor.config.js.example
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Cache
+.cache/
+*.cache.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
