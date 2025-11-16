@@ -1,6 +1,6 @@
 {
   "name": "ai-contextor",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Check documentation freshness for AI assistant projects. Keep your AI docs in sync with code changes.",
   "keywords": [
     "documentation",
