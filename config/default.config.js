@@ -31,5 +31,8 @@ module.exports = {
     quiet: false,
     errorsOnly: false,
   },
+  // Default documentation language (e.g., 'en', 'lt', 'de', 'fr')
+  // Used for generating documentation templates and instructions
+  documentationLanguage: "en",
 };
 

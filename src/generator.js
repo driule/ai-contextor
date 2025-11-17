@@ -8,11 +8,37 @@ const fs = require('fs');
 const path = require('path');
 const { ProjectAnalyzer } = require('./analyzer');
 const { StructureGenerator } = require('./structure');
+const defaultConfig = require('../config/default.config');
 
 class DocumentationGenerator {
-  constructor(projectRoot) {
+  constructor(projectRoot, config = {}) {
     this.projectRoot = projectRoot;
+    this.config = this.loadConfig(config);
     this.analyzer = new ProjectAnalyzer(projectRoot);
+  }
+
+  /**
+   * Load and merge configuration
+   */
+  loadConfig(overrides = {}) {
+    // Start with defaults
+    const merged = { ...defaultConfig };
+
+    // Project config: .contextor.config.js in project root
+    const localConfigPath = path.join(this.projectRoot, '.contextor.config.js');
+    if (fs.existsSync(localConfigPath)) {
+      try {
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        const local = require(localConfigPath);
+        Object.assign(merged, local || {});
+      } catch {
+        // ignore invalid local config
+      }
+    }
+
+    // Apply programmatic overrides last
+    Object.assign(merged, overrides || {});
+    return merged;
   }
 
   /**
@@ -27,6 +53,8 @@ class DocumentationGenerator {
     const structureResult = structureGen.generate();
     
     // Generate INIT.md (skip if exists unless force)
+    // Note: this.config.documentationLanguage is available for future use
+    // to customize documentation language (default: 'en')
     const content = this.buildDocumentation(analysis);
     const aiDir = path.join(this.projectRoot, '.ai');
     const initPath = path.join(aiDir, 'INIT.md');
@@ -397,7 +425,13 @@ This project uses a structured documentation framework in the \`.ai\` directory:
    * Get documentation structure footer (optional)
    */
   getDocumentationStructureFooter() {
-    return `\n\nEach documentation file follows a consistent structure with metadata, overview, details, and related documentation links.`;
+    return `\n\n**Important**: This structure is a **starting point**, not a limitation. You are encouraged to:
+- Add new directories and files as needed (e.g., \`deployment/\`, \`security/\`, \`performance/\`)
+- Refactor and reorganize to match your project's architecture
+- Remove sections that don't apply
+- Create project-specific documentation sections
+
+Each documentation file follows a consistent structure with metadata, overview, details, and related documentation links.`;
   }
 
   /**
@@ -530,7 +564,6 @@ This project uses a structured documentation framework in the \`.ai\` directory:
     const type = analysis.type || 'unknown';
     const treeMiddle = this.getProjectTypeTree(type);
     const organization = this.getProjectTypeOrganization(type);
-    const includeFooter = type === 'frontend';
 
     return `${this.getDocumentationStructureHeader()}
 
@@ -541,7 +574,8 @@ ${this.getDocumentationStructureTreeEnd()}
 ${this.getDocumentationOrganizationHeader()}
 
 ${organization}
-${this.getDevOrganizationDescription()}${includeFooter ? this.getDocumentationStructureFooter() : ''}`;
+${this.getDevOrganizationDescription()}
+${this.getDocumentationStructureFooter()}`;
   }
 
   /**
@@ -550,9 +584,45 @@ ${this.getDevOrganizationDescription()}${includeFooter ? this.getDocumentationSt
   buildDocumentationGuidelines(analysis) {
     return `## 📝 Documentation Guidelines
 
-### File Documentation
+### 🎯 Philosophy: Documentation as a Living Framework
 
-When creating or updating documentation files in this \`.ai\` directory:
+**The documentation structure provided is a foundation, not a constraint.**
+
+This framework was automatically generated based on project analysis, but it should be **adapted, extended, and refined** to best serve this specific project's needs. Think of it as a starting point for creating comprehensive, project-specific documentation.
+
+### 🏗️ Building & Evolving the Documentation Framework
+
+**You are empowered to:**
+
+1. **Create New Structure**:
+   - Add new directories (e.g., \`deployment/\`, \`security/\`, \`performance/\`, \`troubleshooting/\`)
+   - Create new documentation files as needed
+   - Organize documentation by feature, module, or domain
+   - Add cross-cutting concerns documentation
+
+2. **Refactor Existing Structure**:
+   - Merge or split files for better organization
+   - Reorganize directories to match project architecture
+   - Rename files and directories for clarity
+   - Remove sections that don't apply to this project
+
+3. **Enhance Documentation Quality**:
+   - Add diagrams, flowcharts, and visual aids
+   - Include code examples and snippets
+   - Create decision records (ADRs) for architectural choices
+   - Document design patterns and conventions
+   - Add troubleshooting guides and FAQs
+
+4. **Project-Specific Documentation**:
+   - Domain-specific documentation (e.g., business logic, workflows)
+   - Integration guides for external services
+   - Deployment and operations documentation
+   - Security and compliance documentation
+   - Performance optimization guides
+
+### 📄 File Documentation Standards
+
+When creating or updating documentation files:
 
 1. **Always include metadata**:
    - \`**Last Updated**\`: YYYY-MM-DD format
@@ -564,13 +634,17 @@ When creating or updating documentation files in this \`.ai\` directory:
    - Code examples where relevant
    - Links to related files and documentation
    - Diagrams or visual aids when helpful
+   - Use consistent formatting and style
 
 3. **Keep documentation fresh**:
    - Update when code changes
    - Review regularly
    - Remove outdated information
+   - Archive historical documentation if needed
 
-### Example Documentation Template
+### 📋 Documentation Template
+
+Use this template as a starting point, but adapt it to your needs:
 
 \`\`\`markdown
 # Document Title
@@ -584,10 +658,25 @@ Brief description of what this document covers.
 ## Details
 Main content here.
 
+## Examples
+Code examples, use cases, or practical scenarios.
+
+## Related Concepts
+Links to related concepts, patterns, or documentation.
+
 ## 🔗 Related Documentation
 - [Link to related doc](./other-doc.md)
 - [Another link](./another-doc.md)
 \`\`\`
+
+### 🚀 Best Practices
+
+1. **Start with the basics**, then expand based on project needs
+2. **Document as you go** - don't wait until the end
+3. **Keep it practical** - focus on what developers need to know
+4. **Link everything** - create a web of interconnected documentation
+5. **Review and refactor** - documentation structure should evolve with the project
+6. **Think from the user's perspective** - what would help someone understand this project?
 `;
   }
 
@@ -621,7 +710,16 @@ Main content here.
    - Update relevant documentation when code changes
    - Consider impact on related files
 
-4. **Documentation Updates**:
+4. **Documentation Framework & Structure**:
+   - **IMPORTANT**: The documentation structure shown above is a **starting point**, not a limitation
+   - **You are encouraged to**:
+     - Create new directories and files as needed for the project
+     - Refactor and reorganize documentation structure
+     - Add project-specific documentation sections
+     - Remove or merge sections that don't fit the project
+     - Create custom documentation templates
+   - **Think outside the box**: Don't just fill existing files - improve the entire documentation framework
+   - **Adapt to project needs**: The structure should serve the project, not constrain it
    - When modifying code, check if documentation needs updates
    - Update "Last Updated" dates in documentation
    - Add new documentation for new features

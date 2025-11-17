@@ -417,7 +417,7 @@ MIT © [Andrius](https://github.com/driule)
 
 ## 📦 Version
 
-Current version: **0.5.1**
+Current version: **0.5.2**
 
 **Status**: 🚧 Beta - Ready for use, but still in active development
 
