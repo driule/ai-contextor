@@ -7,7 +7,7 @@ yarn-error.log*
 # Cache
 .cache/
 *.cache.json
-.docs-check-cache.json
+.ai/docs-check-cache.json
 
 # Environment
 .env

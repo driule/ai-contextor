@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 function getCachePath(projectRoot, cacheFile) {
-  const filename = cacheFile || '.docs-check-cache.json';
+  const filename = cacheFile || '.ai/docs-check-cache.json';
   return path.join(projectRoot, filename);
 }
 
@@ -32,6 +32,11 @@ function loadCache(projectRoot, cacheFile) {
 function saveCache(projectRoot, cacheFile, data) {
   const filePath = getCachePath(projectRoot, cacheFile);
   try {
+    // Ensure directory exists
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
   } catch {
     // ignore write failures

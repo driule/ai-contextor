@@ -8,7 +8,7 @@ module.exports = {
   sourcePatterns: ["**/*.ts", "**/*.js", "**/*.prisma"],
   docPatterns: ["**/*.md"],
   mappings: {},
-  cacheFile: ".docs-check-cache.json",
+  cacheFile: ".ai/docs-check-cache.json",
   check: {
     lastUpdated: true,
     version: true,

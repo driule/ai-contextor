@@ -25,7 +25,7 @@ module.exports = {
   },
 
   // Cache file location
-  cacheFile: ".docs-check-cache.json",
+  cacheFile: ".ai/docs-check-cache.json",
 
   // Check settings
   check: {
