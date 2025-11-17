@@ -103,17 +103,47 @@ npx contextor --force
 npx contextor --quiet
 ```
 
+### Step 5: Development Task Workflow (Optional)
+
+Use the task system for managing development documentation:
+
+```bash
+# 1. Create a new task
+npx contextor task:new "Add user authentication"
+
+# 2. Develop and document in .ai/dev/task-0/ folder
+#    - Edit requirements.md
+#    - Add notes to notes.md
+#    - Document implementation in implementation.md
+
+# 3. Generate documentation drafts
+npx contextor 0
+
+# 4. AI assistant reviews and improves drafts
+#    - Review .ai/dev/task-0/doc-integration-*.md files
+#    - Follow instructions in DOC-INTEGRATION.md
+
+# 5. Integrate improved documentation
+npx contextor 0 --integrate
+
+# 6. Commit documentation updates
+git add .ai/
+git commit -m "Update documentation for user authentication"
+```
+
 ---
 
 ## 📖 Features
 
 - ✅ **Smart Project Analysis** - Automatically detects project type and tech stack
 - ✅ **Documentation Initialization** - Generates `.ai/INIT.md` with project context
+- ✅ **Development Task System** - Manage temporary task documentation with integration workflow
 - ✅ **Freshness Checking** - Detects outdated documentation
 - ✅ **Git Integration** - Only checks when code changes
 - ✅ **Link Validation** - Checks for broken internal links
 - ✅ **Structure Validation** - Ensures required sections exist
 - ✅ **Smart Caching** - Avoids redundant checks
+- ✅ **Safe Defaults** - Won't overwrite existing documentation unless forced
 - ✅ **Configurable** - Works with any project structure
 
 ---
@@ -165,6 +195,45 @@ npx contextor -q
 - Broken internal links
 - Required documentation sections
 - Documentation structure compliance
+
+### Development Task Management
+
+Manage temporary development documentation with the task system:
+
+**1. Create a new task:**
+```bash
+npx contextor task:new "Add user authentication"
+```
+
+This creates `.ai/dev/task-0/` with:
+- `README.md` - Task overview and status
+- `requirements.md` - Detailed requirements template
+- `notes.md` - Development notes template
+- `implementation.md` - Implementation details template
+
+**2. Generate documentation drafts:**
+```bash
+# After committing code changes
+npx contextor 0
+```
+
+This generates:
+- `doc-integration-*.md` - Draft documentation files
+- `DOC-INTEGRATION.md` - Instructions for AI assistant
+
+**3. Integrate improved drafts:**
+```bash
+# After AI assistant improves drafts
+npx contextor 0 --integrate
+```
+
+This integrates the improved drafts into main documentation (`.ai/` directory).
+
+**Task workflow:**
+1. Create task → Develop → Document in task folder
+2. Commit code → Generate drafts
+3. AI assistant improves drafts
+4. Integrate → Commit documentation
 
 ### Configuration
 
@@ -236,22 +305,79 @@ After initialization, your project will have:
 ```
 your-project/
 ├── .ai/
-│   ├── INIT.md              # Generated project context
-│   └── docs-check-cache.json # Cache file (gitignored)
-├── .contextor.config.js     # Configuration (optional)
+│   ├── INIT.md                      # Generated project context
+│   ├── README.md                    # Documentation framework overview
+│   ├── architecture/                # Architecture documentation
+│   ├── api/                         # API documentation
+│   ├── examples/                    # Usage examples
+│   ├── dev/                         # Development tasks (gitignored)
+│   │   ├── README.md                # Task system documentation
+│   │   └── task-N/                  # Individual task directories
+│   └── docs-check-cache.json        # Cache file (gitignored)
+├── .contextor.config.js             # Configuration (optional)
 └── ...
 ```
+
+**Note:** The `.ai/dev/` directory is gitignored and contains temporary task documentation.
 
 ---
 
 ## 🔧 CLI Commands
 
+### Core Commands
+
 | Command | Description |
 |---------|-------------|
-| `npx contextor` | Check documentation freshness |
+| `npx contextor` | Check documentation freshness (default) |
 | `npx contextor init` | Initialize documentation structure |
-| `npx contextor --force` | Force check (ignore cache) |
-| `npx contextor --quiet` | Quiet mode (minimal output) |
+| `npx contextor init --force` | Initialize and overwrite existing INIT.md |
+| `npx contextor task:new "description"` | Create a new development task directory |
+| `npx contextor <task-list>` | Generate documentation drafts for tasks |
+| `npx contextor <task-list> --integrate` | Integrate improved drafts into main docs |
+| `npx contextor --help` | Show help message |
+| `npx contextor --version` | Show version number |
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `--force`, `-f` | Force mode (overwrite INIT.md or ignore cache) |
+| `--quiet`, `-q` | Quiet mode (minimal output) |
+
+### Examples
+
+```bash
+# Initialize documentation
+npx contextor init
+
+# Initialize and overwrite existing INIT.md
+npx contextor init --force
+
+# Create a new task
+npx contextor task:new "Add user authentication"
+
+# Generate drafts for task-0
+npx contextor 0
+# or
+npx contextor task-0
+
+# Generate drafts for multiple tasks
+npx contextor 0,1,2
+# or
+npx contextor task-0,task-1,task-2
+
+# Integrate improved drafts
+npx contextor 0 --integrate
+
+# Check documentation freshness
+npx contextor
+
+# Force check (ignore cache)
+npx contextor --force
+
+# Quiet mode
+npx contextor --quiet
+```
 
 ---
 
@@ -289,4 +415,23 @@ MIT © [Andrius](https://github.com/driule)
 
 ---
 
-**Status**: 🚧 Early Development
+## 📦 Version
+
+Current version: **0.5.1**
+
+**Status**: 🚧 Beta - Ready for use, but still in active development
+
+### What's New in v0.5.0
+
+- ✨ **Safe init behavior** - INIT.md is now skipped if exists (prevents overwriting custom docs)
+- ✨ **--force flag** - Allows overwriting INIT.md when needed
+- 🔧 **Refactored generator** - Improved code maintainability and extensibility
+- 📚 **Task system** - Complete development task workflow with draft generation and integration
+
+### Roadmap
+
+- [ ] Unit tests and test coverage
+- [ ] CI/CD pipeline
+- [ ] TypeScript definitions
+- [ ] More project type templates
+- [ ] Enhanced error messages
