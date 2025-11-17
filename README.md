@@ -5,8 +5,11 @@
 [![npm version](https://img.shields.io/npm/v/ai-contextor.svg)](https://www.npmjs.com/package/ai-contextor)
 [![npm downloads](https://img.shields.io/npm/dm/ai-contextor.svg)](https://www.npmjs.com/package/ai-contextor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/driule/ai-contextor.svg?style=social)](https://github.com/driule/ai-contextor)
 
-📦 **npm package**: [ai-contextor](https://www.npmjs.com/package/ai-contextor)
+📦 **npm package**: [ai-contextor](https://www.npmjs.com/package/ai-contextor)  
+⭐ **Star us on GitHub**: [driule/ai-contextor](https://github.com/driule/ai-contextor)  
+💝 **Support this project**: [GitHub Sponsors](https://github.com/sponsors/driule)
 
 Check documentation freshness for AI assistant projects. Automatically detects when documentation needs updates after code changes. Non-intrusive, git-aware, and highly configurable.
 
@@ -405,7 +408,47 @@ Main content...
 
 ## 🤝 Contributing
 
-Contributions welcome! Please read our contributing guidelines first.
+Contributions welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) first.
+
+**Ways to contribute:**
+- 🐛 Report bugs
+- 💡 Suggest new features
+- 📝 Improve documentation
+- 🔧 Submit pull requests
+- ⭐ Star the repository
+
+---
+
+## 💝 Support & Sponsorship
+
+This project is open source and free to use. If you find it helpful, please consider:
+
+- ⭐ **Starring** the repository on GitHub
+- 🐛 **Reporting** bugs and issues
+- 💬 **Sharing** with your team and community
+- 💝 **Sponsoring** the project to support continued development
+
+### GitHub Sponsors
+
+Support this project through [GitHub Sponsors](https://github.com/sponsors/driule). Your sponsorship helps:
+
+- 🚀 Maintain and improve the project
+- 🐛 Fix bugs faster
+- ✨ Add new features
+- 📚 Create better documentation
+
+**Sponsorship Tiers:**
+- 🤖 **Assistant** ($5/month) - Thank you! Your name in README supporters list
+- 🚀 **Navigator** ($15/month) - Priority support + your name in README
+- ⚡ **Architect** ($50/month) - All above + feature requests priority
+- 🌟 **Context Master** ($200/month) - All above + custom features consultation
+
+*Note: GitHub Sponsors is free - GitHub doesn't take any fees for personal accounts!*
+
+### Other Ways to Support
+
+- 💼 **Hire me** for consulting or custom development
+- 📧 **Contact**: [GitHub Profile](https://github.com/driule)
 
 ---
 

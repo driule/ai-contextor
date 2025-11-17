@@ -13,7 +13,16 @@
     "docs",
     "documentation-checker",
     "cli-tool",
-    "npm-package"
+    "npm-package",
+    "documentation-tools",
+    "ai-tools",
+    "developer-tools",
+    "documentation-automation",
+    "code-documentation",
+    "markdown",
+    "git-integration",
+    "documentation-framework",
+    "ai-development"
   ],
   "main": "src/index.js",
   "bin": {
