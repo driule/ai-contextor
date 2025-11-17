@@ -460,7 +460,7 @@ MIT © [Andrius](https://github.com/driule)
 
 ## 📦 Version
 
-Current version: **0.5.3**
+Current version: **0.5.4**
 
 **Status**: 🚧 Beta - Ready for use, but still in active development
 
