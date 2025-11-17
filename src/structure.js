@@ -98,8 +98,9 @@ class StructureGenerator {
     return `# AI Contextor cache files
 docs-check-cache.json
 
-# Development tasks (temporary documentation)
-dev/
+# Development task directories (temporary documentation)
+# Note: dev/README.md is committed, only task-{n} folders are ignored
+dev/task-*/
 
 # Documentation integration drafts
 doc-integration-*.md
