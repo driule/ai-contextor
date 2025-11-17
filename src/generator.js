@@ -18,26 +18,33 @@ class DocumentationGenerator {
   /**
    * Generate INIT.md documentation and directory structure
    */
-  async generate() {
+  async generate(options = {}) {
     const analysis = this.analyzer.analyze();
+    const force = options.force || false;
     
     // Generate directory structure first
     const structureGen = new StructureGenerator(this.projectRoot, analysis);
     const structureResult = structureGen.generate();
     
-    // Generate INIT.md (overwrite if exists)
+    // Generate INIT.md (skip if exists unless force)
     const content = this.buildDocumentation(analysis);
     const aiDir = path.join(this.projectRoot, '.ai');
     const initPath = path.join(aiDir, 'INIT.md');
     const initExisted = fs.existsSync(initPath);
-    fs.writeFileSync(initPath, content, 'utf8');
+    const initSkipped = initExisted && !force;
+    
+    if (!initSkipped) {
+      fs.writeFileSync(initPath, content, 'utf8');
+    }
     
     return {
       path: initPath,
       analysis,
       structureFiles: structureResult.created || [],
       skippedFiles: structureResult.skipped || [],
-      initExisted
+      initExisted,
+      initSkipped,
+      initCreated: !initSkipped
     };
   }
 
@@ -354,21 +361,67 @@ class DocumentationGenerator {
   }
 
   /**
-   * Build documentation structure section
+   * Get documentation structure section header
    */
-  buildDocumentationStructure(analysis) {
-    const type = analysis.type || 'unknown';
-    let structure = '';
-    
-    if (type === 'frontend') {
-      structure = `## 📚 Documentation Structure
+  getDocumentationStructureHeader() {
+    return `## 📚 Documentation Structure
 
-This project uses a structured documentation framework in the \`.ai\` directory:
+This project uses a structured documentation framework in the \`.ai\` directory:`;
+  }
 
-\`\`\`
+  /**
+   * Get documentation structure tree start
+   */
+  getDocumentationStructureTreeStart() {
+    return `\`\`\`
 .ai/
-├── INIT.md                      # Project context (this file)
-├── architecture/
+├── INIT.md                      # Project context (this file)`;
+  }
+
+  /**
+   * Get documentation structure tree end (with dev directory)
+   */
+  getDocumentationStructureTreeEnd() {
+    return `${this.getDevStructureTree()}
+\`\`\``;
+  }
+
+  /**
+   * Get documentation organization section header
+   */
+  getDocumentationOrganizationHeader() {
+    return `### Documentation Organization`;
+  }
+
+  /**
+   * Get documentation structure footer (optional)
+   */
+  getDocumentationStructureFooter() {
+    return `\n\nEach documentation file follows a consistent structure with metadata, overview, details, and related documentation links.`;
+  }
+
+  /**
+   * Get dev directory structure tree lines
+   */
+  getDevStructureTree() {
+    return `└── dev/                         # Development tasks (gitignored)
+    ├── README.md                # Task system documentation
+    └── task-N/                  # Individual task directories`;
+  }
+
+  /**
+   * Get dev directory organization description
+   */
+  getDevOrganizationDescription() {
+    return `- **dev/** - Development tasks (temporary, gitignored) - See [dev/README.md](./dev/README.md)`;
+  }
+
+  /**
+   * Get project-specific documentation structure tree (middle part)
+   */
+  getProjectTypeTree(type) {
+    const trees = {
+      frontend: `├── architecture/
 │   ├── system-overview.md       # Overall system architecture
 │   ├── component-architecture.md # Component structure and patterns
 │   └── routing.md               # Routing and navigation
@@ -379,28 +432,10 @@ This project uses a structured documentation framework in the \`.ai\` directory:
 │   └── state-overview.md        # State management approach
 ├── api/
 │   └── api-integration.md       # API integration patterns
-└── styling/
-    └── styling-guide.md         # Styling approach and guidelines
-\`\`\`
+├── styling/
+│   └── styling-guide.md         # Styling approach and guidelines`,
 
-### Documentation Organization
-
-- **architecture/** - High-level system design and architectural decisions
-- **components/** - Component patterns, guidelines, and UI patterns
-- **state-management/** - State management strategy and patterns
-- **api/** - API integration and communication patterns
-- **styling/** - Styling approach and design system
-
-Each documentation file follows a consistent structure with metadata, overview, details, and related documentation links.`;
-    } else if (type === 'backend') {
-      structure = `## 📚 Documentation Structure
-
-This project uses a structured documentation framework in the \`.ai\` directory:
-
-\`\`\`
-.ai/
-├── INIT.md                      # Project context (this file)
-├── architecture/
+      backend: `├── architecture/
 │   ├── system-overview.md       # Overall system architecture
 │   ├── api-design.md            # API design principles
 │   └── service-architecture.md  # Service layer architecture
@@ -410,25 +445,10 @@ This project uses a structured documentation framework in the \`.ai\` directory:
 ├── api/
 │   ├── endpoints.md             # API endpoints documentation
 │   └── authentication.md        # Authentication and authorization
-└── services/
-    └── business-logic.md        # Business logic and domain rules
-\`\`\`
+├── services/
+│   └── business-logic.md        # Business logic and domain rules`,
 
-### Documentation Organization
-
-- **architecture/** - System architecture and design decisions
-- **database/** - Database schema and migration documentation
-- **api/** - API endpoints and authentication
-- **services/** - Business logic and domain rules`;
-    } else if (type === 'fullstack') {
-      structure = `## 📚 Documentation Structure
-
-This project uses a structured documentation framework in the \`.ai\` directory:
-
-\`\`\`
-.ai/
-├── INIT.md                      # Project context (this file)
-├── architecture/
+      fullstack: `├── architecture/
 │   ├── system-overview.md       # Overall system architecture
 │   └── client-server.md         # Client-server communication
 ├── frontend/
@@ -439,80 +459,89 @@ This project uses a structured documentation framework in the \`.ai\` directory:
 │   └── api.md                   # Backend API
 ├── shared/
 │   └── shared-code.md           # Shared code between frontend/backend
-└── database/
-    └── database-schema.md        # Database schema
-\`\`\`
+├── database/
+│   └── database-schema.md        # Database schema`,
 
-### Documentation Organization
-
-- **architecture/** - Full-stack architecture and communication patterns
-- **frontend/** - Frontend-specific documentation
-- **backend/** - Backend-specific documentation
-- **shared/** - Shared code and types
-- **database/** - Database schema and design`;
-    } else if (type === 'library') {
-      structure = `## 📚 Documentation Structure
-
-This project uses a structured documentation framework in the \`.ai\` directory:
-
-\`\`\`
-.ai/
-├── INIT.md                      # Project context (this file)
+      library: `├── README.md                    # Documentation framework overview
 ├── architecture/
 │   ├── system-overview.md       # Library architecture overview
 │   └── api-design.md            # API design principles
 ├── api/
 │   ├── public-api.md            # Public API documentation
 │   └── internal-api.md          # Internal API (for maintainers)
-└── examples/
-    └── usage-examples.md         # Usage examples and patterns
-\`\`\`
+├── examples/
+│   └── usage-examples.md         # Usage examples and patterns`,
 
-### Documentation Organization
-
-- **architecture/** - Library architecture and design decisions
-- **api/** - Public and internal API documentation
-- **examples/** - Usage examples and patterns`;
-    } else if (type === 'monorepo') {
-      structure = `## 📚 Documentation Structure
-
-This project uses a structured documentation framework in the \`.ai\` directory:
-
-\`\`\`
-.ai/
-├── INIT.md                      # Project context (this file)
-├── architecture/
+      monorepo: `├── architecture/
 │   ├── monorepo-overview.md     # Monorepo architecture
 │   └── workspace-structure.md   # Workspace organization
-└── packages/
-    └── package-overview.md       # Package documentation
-\`\`\`
+├── packages/
+│   └── package-overview.md       # Package documentation`,
 
-### Documentation Organization
-
-- **architecture/** - Monorepo architecture and workspace structure
-- **packages/** - Individual package documentation`;
-    } else {
-      structure = `## 📚 Documentation Structure
-
-This project uses a structured documentation framework in the \`.ai\` directory:
-
-\`\`\`
-.ai/
-├── INIT.md                      # Project context (this file)
-├── architecture/
+      default: `├── architecture/
 │   └── system-overview.md       # System architecture overview
-└── components/
-    └── components-overview.md   # Components overview
-\`\`\`
+├── components/
+│   └── components-overview.md   # Components overview`
+    };
 
-### Documentation Organization
+    return trees[type] || trees.default;
+  }
 
-- **architecture/** - System architecture and design
-- **components/** - Component documentation`;
-    }
-    
-    return structure;
+  /**
+   * Get project-specific documentation organization descriptions
+   */
+  getProjectTypeOrganization(type) {
+    const organizations = {
+      frontend: `- **architecture/** - High-level system design and architectural decisions
+- **components/** - Component patterns, guidelines, and UI patterns
+- **state-management/** - State management strategy and patterns
+- **api/** - API integration and communication patterns
+- **styling/** - Styling approach and design system`,
+
+      backend: `- **architecture/** - System architecture and design decisions
+- **database/** - Database schema and migration documentation
+- **api/** - API endpoints and authentication
+- **services/** - Business logic and domain rules`,
+
+      fullstack: `- **architecture/** - Full-stack architecture and communication patterns
+- **frontend/** - Frontend-specific documentation
+- **backend/** - Backend-specific documentation
+- **shared/** - Shared code and types
+- **database/** - Database schema and design`,
+
+      library: `- **architecture/** - Library architecture and design decisions
+- **api/** - Public and internal API documentation
+- **examples/** - Usage examples and patterns`,
+
+      monorepo: `- **architecture/** - Monorepo architecture and workspace structure
+- **packages/** - Individual package documentation`,
+
+      default: `- **architecture/** - System architecture and design
+- **components/** - Component documentation`
+    };
+
+    return organizations[type] || organizations.default;
+  }
+
+  /**
+   * Build documentation structure section
+   */
+  buildDocumentationStructure(analysis) {
+    const type = analysis.type || 'unknown';
+    const treeMiddle = this.getProjectTypeTree(type);
+    const organization = this.getProjectTypeOrganization(type);
+    const includeFooter = type === 'frontend';
+
+    return `${this.getDocumentationStructureHeader()}
+
+${this.getDocumentationStructureTreeStart()}
+${treeMiddle}
+${this.getDocumentationStructureTreeEnd()}
+
+${this.getDocumentationOrganizationHeader()}
+
+${organization}
+${this.getDevOrganizationDescription()}${includeFooter ? this.getDocumentationStructureFooter() : ''}`;
   }
 
   /**
@@ -632,9 +661,26 @@ Main content here.
 `;
     }
 
-    content += `### Common Tasks
+    content += `### Development Task System
 
-- **Adding a new feature**: Update code, add tests, update documentation
+This project uses a task-based workflow for managing development:
+
+**Task Workflow:**
+1. Create task: \`npx contextor task:new "Task description"\`
+2. Develop and document in \`.ai/dev/task-N/\` folder
+3. Generate drafts: \`npx contextor N\`
+4. Review and improve drafts (AI assistant task)
+5. Integrate: \`npx contextor N --integrate\`
+
+**Task Documentation:**
+- Task folders (\`.ai/dev/task-N/\`) are gitignored and temporary
+- Use \`requirements.md\`, \`implementation.md\`, and \`notes.md\` for task docs
+- Draft files (\`doc-integration-*.md\`) are generated for review
+- See \`.ai/dev/README.md\` for detailed task system documentation
+
+### Common Tasks
+
+- **Adding a new feature**: Create task, develop, generate drafts, integrate docs
 - **Fixing a bug**: Fix code, verify tests, update docs if behavior changes
 - **Refactoring**: Update all affected files, maintain tests, update documentation
 - **Documentation**: Keep it accurate, up-to-date, and well-structured
@@ -647,6 +693,7 @@ Before making changes, ask:
 3. What documentation needs to be updated?
 4. Are there tests that need to be updated or added?
 5. What are the dependencies and side effects?
+6. Should this be tracked as a development task?
 
 ---
 `;

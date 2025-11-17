@@ -25,20 +25,300 @@ class StructureGenerator {
       fs.mkdirSync(this.aiDir, { recursive: true });
     }
 
+    // Generate .gitignore first (to ignore cache files)
+    const gitignorePath = path.join(this.aiDir, '.gitignore');
+    const gitignoreContent = this.generateGitignore();
+    let gitignoreCreated = false;
+    if (!fs.existsSync(gitignorePath)) {
+      fs.writeFileSync(gitignorePath, gitignoreContent, 'utf8');
+      gitignoreCreated = true;
+    }
+
+    // Generate README.md
+    const readmePath = path.join(this.aiDir, 'README.md');
+    const readmeContent = this.generateReadme(type);
+    let readmeCreated = false;
+    if (!fs.existsSync(readmePath)) {
+      fs.writeFileSync(readmePath, readmeContent, 'utf8');
+      readmeCreated = true;
+    }
+
+    // Generate project-specific structure first
+    let structureResult;
     switch (type) {
       case 'frontend':
-        return this.generateFrontendStructure();
+        structureResult = this.generateFrontendStructure();
+        break;
       case 'backend':
-        return this.generateBackendStructure();
+        structureResult = this.generateBackendStructure();
+        break;
       case 'fullstack':
-        return this.generateFullstackStructure();
+        structureResult = this.generateFullstackStructure();
+        break;
       case 'library':
-        return this.generateLibraryStructure();
+        structureResult = this.generateLibraryStructure();
+        break;
       case 'monorepo':
-        return this.generateMonorepoStructure();
+        structureResult = this.generateMonorepoStructure();
+        break;
       default:
-        return this.generateGenericStructure();
+        structureResult = this.generateGenericStructure();
     }
+
+    // Add .gitignore to created files if it was created
+    if (gitignoreCreated) {
+      structureResult.created.push(gitignorePath);
+    } else {
+      structureResult.skipped.push(gitignorePath);
+    }
+
+    // Generate dev directory structure
+    const devResult = this.generateDevStructure();
+    if (devResult.created.length > 0) {
+      structureResult.created.push(...devResult.created);
+    }
+    if (devResult.skipped.length > 0) {
+      structureResult.skipped.push(...devResult.skipped);
+    }
+
+    // Add README.md to created files if it was created
+    if (readmeCreated) {
+      structureResult.created.push(readmePath);
+    } else {
+      structureResult.skipped.push(readmePath);
+    }
+
+    return structureResult;
+  }
+
+  /**
+   * Generate .gitignore for .ai directory
+   */
+  generateGitignore() {
+    return `# AI Contextor cache files
+docs-check-cache.json
+
+# Development tasks (temporary documentation)
+dev/
+
+# Documentation integration drafts
+doc-integration-*.md
+DOC-INTEGRATION.md
+
+# Temporary files
+*.tmp
+*.temp
+
+# Personal notes (uncomment if you want to ignore)
+# personal-notes.md
+# notes/
+`;
+  }
+
+  /**
+   * Generate dev directory structure
+   */
+  generateDevStructure() {
+    const devDir = path.join(this.aiDir, 'dev');
+    const created = [];
+    const skipped = [];
+
+    // Create dev directory
+    if (!fs.existsSync(devDir)) {
+      fs.mkdirSync(devDir, { recursive: true });
+      created.push(devDir);
+    }
+
+    // Create dev/README.md
+    const devReadmePath = path.join(devDir, 'README.md');
+    const devReadmeContent = this.generateDevReadme();
+    if (!fs.existsSync(devReadmePath)) {
+      fs.writeFileSync(devReadmePath, devReadmeContent, 'utf8');
+      created.push(devReadmePath);
+    } else {
+      skipped.push(devReadmePath);
+    }
+
+    return { created, skipped };
+  }
+
+  /**
+   * Generate dev/README.md
+   */
+  generateDevReadme() {
+    const date = new Date().toISOString().split('T')[0];
+    return `# Development Tasks
+
+**Last Updated**: ${date}
+
+> This directory contains temporary development documentation for active tasks.
+> Task directories are gitignored and should be cleaned up when tasks are completed.
+
+## 📋 Purpose
+
+The \`dev/\` directory is used for:
+- **Task-specific documentation** - Requirements, specifications, and notes for active development tasks
+- **Temporary notes** - Work-in-progress documentation that doesn't belong in main documentation
+- **Task tracking** - Organize documentation by task number (task-0, task-1, etc.)
+
+## 🚀 Usage
+
+### Creating a New Task
+
+Use the \`contextor task:new\` command to create a new task directory:
+
+\`\`\`bash
+npx contextor task:new "Task description"
+# or
+npm run task:new "Task description"
+\`\`\`
+
+This will:
+- Create a new \`task-N\` directory (where N is the next available number)
+- Generate a task README with template structure
+- Create initial documentation files
+
+### Task Structure
+
+Each task directory (\`task-0\`, \`task-1\`, etc.) contains:
+
+- **README.md** - Task overview, requirements, and status
+- **requirements.md** - Detailed requirements and specifications
+- **notes.md** - Development notes and decisions
+- **implementation.md** - Implementation details and approach
+
+### Task Workflow
+
+1. **Create task**: \`contextor task:new "Feature X"\`
+2. **Document requirements**: Fill in \`requirements.md\`
+3. **Take notes**: Use \`notes.md\` during development
+4. **Document implementation**: Update \`implementation.md\` as you code
+5. **Clean up**: Delete task directory when task is complete
+
+### Best Practices
+
+- ✅ Keep task directories focused on a single task
+- ✅ Update documentation as you work
+- ✅ Clean up completed tasks
+- ✅ Use clear, descriptive task names
+- ❌ Don't commit task directories (they're gitignored)
+- ❌ Don't leave old tasks indefinitely
+
+## 📁 Example Task Structure
+
+\`\`\`
+dev/
+├── README.md              # This file
+├── task-0/                # First task
+│   ├── README.md          # Task overview
+│   ├── requirements.md    # Requirements
+│   ├── notes.md           # Development notes
+│   └── implementation.md  # Implementation details
+└── task-1/                # Second task
+    └── ...
+\`\`\`
+
+## 🔗 Related Documentation
+
+- [Main Documentation](../README.md)
+- [Project Initialization Guide](../INIT.md)
+
+---
+
+*Task directories are automatically gitignored. They are temporary and should be removed when tasks are completed.*
+`;
+  }
+
+  /**
+   * Generate README.md for .ai directory
+   */
+  generateReadme(projectType) {
+    const typeDescriptions = {
+      'frontend': 'Frontend web application',
+      'backend': 'Backend API/server application',
+      'fullstack': 'Full-stack application (frontend + backend)',
+      'library': 'Library or package',
+      'monorepo': 'Monorepo workspace',
+      'unknown': 'Project'
+    };
+
+    const description = typeDescriptions[projectType] || typeDescriptions.unknown;
+    const date = new Date().toISOString().split('T')[0];
+
+    return `# AI Documentation
+
+**Last Updated**: ${date}
+
+> This directory contains AI assistant documentation for this ${description.toLowerCase()}.
+> Documentation is automatically managed by [AI Contextor](https://github.com/driule/ai-contextor).
+
+## 📚 Documentation Framework
+
+This project uses a structured documentation framework to provide context for AI assistants working on the codebase.
+
+### Quick Start
+
+1. **Read [INIT.md](./INIT.md)** - Start here for project context and guidelines
+2. **Explore documentation** - Browse the documentation structure below
+3. **Keep it updated** - Update documentation when code changes
+
+### Documentation Structure
+
+The documentation is organized into logical sections:
+
+- **[INIT.md](./INIT.md)** - Project initialization guide and context
+- **architecture/** - System architecture and design decisions
+${this.getReadmeStructureLinks(projectType)}
+- **dev/** - Development tasks (temporary, gitignored) - See [dev/README.md](./dev/README.md)
+
+### Documentation Guidelines
+
+- Each documentation file includes metadata (Last Updated, Version)
+- Files link to related documentation using the "🔗 Related Documentation" section
+- Documentation should be updated when code changes
+- Use clear headings and structure
+
+### Using This Documentation
+
+**For AI Assistants:**
+- Start with [INIT.md](./INIT.md) to understand the project
+- Reference specific documentation files when working on related code
+- Update documentation when making code changes
+
+**For Developers:**
+- Review documentation before making significant changes
+- Keep documentation in sync with code
+- Add new documentation files as the project evolves
+
+---
+
+*This documentation structure was generated by [AI Contextor](https://github.com/driule/ai-contextor).*
+`;
+  }
+
+  /**
+   * Get structure links for README based on project type
+   */
+  getReadmeStructureLinks(projectType) {
+    const links = {
+      'frontend': `- **components/** - Component patterns and UI guidelines
+- **state-management/** - State management approach
+- **api/** - API integration patterns
+- **styling/** - Styling approach and design system`,
+      'backend': `- **database/** - Database schema and migrations
+- **api/** - API endpoints and authentication
+- **services/** - Business logic and domain rules`,
+      'fullstack': `- **frontend/** - Frontend-specific documentation
+- **backend/** - Backend-specific documentation
+- **shared/** - Shared code and types
+- **database/** - Database schema`,
+      'library': `- **api/** - Public and internal API documentation
+- **examples/** - Usage examples and patterns`,
+      'monorepo': `- **packages/** - Individual package documentation`,
+      'unknown': `- **components/** - Component documentation`
+    };
+
+    return links[projectType] || links['unknown'];
   }
 
   /**

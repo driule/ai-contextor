@@ -23,7 +23,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "echo \"Linting not configured yet\"",
-    "start": "node bin/contextor.js"
+    "start": "node bin/contextor.js",
+    "init": "node bin/contextor.js init",
+    "task:new": "node bin/contextor.js task:new",
+    "check": "node bin/contextor.js",
+    "check:force": "node bin/contextor.js --force",
+    "check:quiet": "node bin/contextor.js --quiet",
+    "help": "node bin/contextor.js --help",
+    "version": "node bin/contextor.js --version"
   },
   "repository": {
     "type": "git",

@@ -80,6 +80,76 @@ This is a library/package project:
 - Use consistent naming patterns
 
 
+## 📚 Documentation Structure
+
+This project uses a structured documentation framework in the `.ai` directory:
+
+```
+.ai/
+├── INIT.md                      # Project context (this file)
+├── README.md                    # Documentation framework overview
+├── architecture/
+│   ├── system-overview.md       # Library architecture overview
+│   └── api-design.md            # API design principles
+├── api/
+│   ├── public-api.md            # Public API documentation
+│   └── internal-api.md          # Internal API (for maintainers)
+├── examples/
+│   └── usage-examples.md         # Usage examples and patterns
+└── dev/                         # Development tasks (gitignored)
+    ├── README.md                # Task system documentation
+    └── task-N/                  # Individual task directories
+```
+
+### Documentation Organization
+
+- **architecture/** - Library architecture and design decisions
+- **api/** - Public and internal API documentation
+- **examples/** - Usage examples and patterns
+- **dev/** - Development tasks (temporary, gitignored) - See [dev/README.md](./dev/README.md)
+
+## 📋 Development Task System
+
+This project uses a task-based workflow for managing development documentation:
+
+### Task Workflow
+
+1. **Create Task**: `npx contextor task:new "Task description"`
+   - Creates `.ai/dev/task-N/` directory
+   - Generates task documentation templates
+
+2. **Develop & Document**: 
+   - Document requirements in `requirements.md`
+   - Track implementation in `implementation.md`
+   - Add notes in `notes.md`
+
+3. **Generate Drafts**: `npx contextor N`
+   - Generates draft documentation files in task folder
+   - Creates `DOC-INTEGRATION.md` with AI assistant instructions
+
+4. **AI Assistant Reviews**: 
+   - Reviews and improves draft files
+   - Adds context from code changes
+   - Ensures consistency
+
+5. **Integrate**: `npx contextor N --integrate`
+   - Integrates improved drafts into main documentation
+   - Updates `.ai/` documentation files
+
+### Task Structure
+
+Each task directory contains:
+- `README.md` - Task overview and status
+- `requirements.md` - Detailed requirements
+- `notes.md` - Development notes
+- `implementation.md` - Implementation details
+- `doc-integration-*.md` - Draft documentation (generated)
+- `DOC-INTEGRATION.md` - Integration instructions (generated)
+
+**Note**: Task directories are gitignored and temporary. Clean them up when tasks are completed.
+
+See [dev/README.md](./dev/README.md) for detailed task system documentation.
+
 ## 📝 Documentation Guidelines
 
 ### File Documentation

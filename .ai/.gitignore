@@ -1,0 +1,17 @@
+# AI Contextor cache files
+docs-check-cache.json
+
+# Development tasks (temporary documentation)
+dev/
+
+# Documentation integration drafts
+doc-integration-*.md
+DOC-INTEGRATION.md
+
+# Temporary files
+*.tmp
+*.temp
+
+# Personal notes (uncomment if you want to ignore)
+# personal-notes.md
+# notes/
